@@ -1,0 +1,560 @@
+{% load static %}
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <link rel="stylesheet" type="text/css" href="{% static 'mypro/css/flex.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'mypro/css/assist.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'mypro/css/animate.css' %}"/>
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+        }
+
+        .record-box {
+            width: 100%;
+            height: 100%;
+        }
+
+        nav {
+            width: 100%;
+            height: 42px;
+            position: relative;
+        }
+
+        nav>ul {
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+        }
+
+        nav>ul>li {
+            text-align: center;
+            line-height: 42px;
+            position: relative;
+
+        }
+
+        nav>ul>li.active {
+            color: #446FF6
+        }
+
+        nav>ul>li.active::after {
+            position: absolute;
+            content: '';
+            width: 30%;
+            height: 2px;
+            left: 50%;
+            margin-left: -15%;
+            bottom: 0;
+            background: #446FF6
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
+            overflow: -moz-scrollbars-none;
+            overflow: -moz-scrollbars-none;
+            padding: 15px;
+            background: #f5f5f5;
+        }
+
+        .container>li {
+            width: 100%;
+            height: 218px;
+            background: #fff;
+            border-radius: 5px;
+            padding: 0 12px;
+            margin-bottom: 15px;
+        }
+
+        .item-code {
+            width: 100%;
+            height: 40px;
+            line-height: 40px;
+            color: #333;
+            font-size: 12px;
+            border-bottom: 1px solid rgba(238, 238, 238, 1);
+        }
+
+        .item-code>span:last-child {
+            display: block;
+            text-align: right;
+            color: #999;
+        }
+
+        .item-info {
+            width: 100%;
+            height: 117px;
+            padding: 17px 0;
+            border-bottom: 1px solid rgba(238, 238, 238, 1)
+        }
+
+        .item-info>div {
+            position: relative;
+        }
+
+        .item-info>img {
+            width: 84px;
+            height: 84px;
+            display: block;
+            margin-right: 8px;
+        }
+
+        .item-info>div {
+            position: relative;
+        }
+
+        .item-info>div>p {
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .item-info__price {
+            width: 100%;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 30px;
+            line-height: 30px;
+            text-align: right;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .item-info__price>font {
+            font-size: 12px;
+            font-weight: 400;
+            color: #191919;
+        }
+
+        .item-btn {
+            text-align: right
+        }
+
+        .item-btn>button {
+            display: inline-block;
+            min-width: 80px;
+            height: 30px;
+            text-align: center;
+            background: #446FF6;
+            color: #fff;
+            font-size: 14px;
+            border-radius: 15px;
+            margin-top: 15px;
+            outline: none;
+        }
+
+        .item-btn>button.otherBtn {
+            background: #fff;
+            color: #fff;
+            font-size: 14px;
+            border-radius: 15px;
+            margin-top: 15px;
+            color: #446FF6;
+            border: 1px solid #446FF6
+        }
+
+        .layer {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            padding: 0 27px;
+            background: rgba(0, 0, 0, 0.8)
+        }
+
+        .layer-box {
+            width: 100%;
+            min-height: 335px;
+            border-radius: 5px;
+            background: #fff;
+            padding: 30px 15px
+        }
+
+        .layer-box>.tit {
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .layer-box>.pro {
+            width: 100%;
+            height: 84px;
+        }
+
+        .layer-box>.pro>img {
+            width: 84px;
+            height: 84px;
+            display: block;
+            margin-right: 8px;
+        }
+
+        .pro-info {
+            width: 100%;
+            height: 84px;
+        }
+
+        .pro-info>.star {
+            width: 100%;
+            height: 34px;
+            line-height: 34px;
+        }
+
+        .pro-info>.star>span {
+            font-size: 14px;
+            color: #191919;
+            font-weight: 400;
+            margin-right: 10px;
+        }
+
+        .star-box>span {
+            width: 18px;
+            height: 18px;
+            display: inline-block;
+            margin-right: 8px;
+            background: url('{% static 'mypro/image/press@2x.png' %}') no-repeat center center;
+            background-size: 100% 100%
+        }
+
+        .star-box__eval>span {
+            width: 18px;
+            height: 18px;
+            display: inline-block;
+            margin-right: 8px;
+            background: url('{% static 'mypro/image/single_icon_nor@2x.png' %}') no-repeat center center;
+            background-size: 100% 100%
+        }
+
+        .star-box__eval>span.active {
+            background: url('{% static 'mypro/image/press@2x.png' %}.') no-repeat center center;
+            background-size: 100% 100%
+        }
+
+        .star-top {
+            margin-top: 10px
+        }
+
+        .evaluation-box {
+            margin-top: 30px;
+            font-size: 14px;
+            line-height: 21px;
+        }
+
+        .share-box {
+            width: 100%;
+            height: auto;
+            height: 140px;
+            border-radius: 3px;
+            margin-top: 15px;
+
+        }
+
+        .share-box>textarea {
+            width: 100%;
+            height: 100%;
+            display: block;
+            padding: 15px;
+            outline: none;
+            border: none;
+            background: rgba(245, 245, 245, 1);
+            resize: none;
+        }
+
+        textarea::-webkit-input-placeholder {
+            color: #999;
+        }
+
+        .evalBtn {
+            width: 100%;
+            margin-top: 45px;
+        }
+
+        .evalBtn>span {
+            display: block;
+            width: 100%;
+            height: 44px;
+            line-height: 44px;
+            background: #446FF6;
+            text-align: center;
+            font-size: 16px;
+            color: #fff;
+            outline: none;
+            border: none;
+            border-radius: 22px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="record-box flex-display flex-display-column">
+        <nav>
+            <ul class="flex-display" id="navBox">
+                <li class="flex-num-one active" data-id="1">全部</li>
+                <li class="flex-num-one" data-id="2">待评价</li>
+                <li class="flex-num-one" data-id="3">已评价</li>
+            </ul>
+        </nav>
+        <ul class="container flex-num-one" id="container">
+            <li class="flex-display flex-display-column">
+                <div class="item-code flex-display">
+                    <span>订单号：1234567896012356</span>
+                    <span class="flex-num-one">2019-08-0 916:20:03</span>
+                </div>
+                <div class="item-info flex-display">
+                    <img src="http://cdn.duitang.com/uploads/item/201410/16/20141016202155_5ycRZ.thumb.700_0.jpeg" />
+                    <div class="flex-num-one">
+                        <p class="text-overflow-2">小气泡补水美白项目小气泡补水美白项目</p>
+                        <div class="item-info__price">
+                            <font>扣除余额：</font>¥1490
+                        </div>
+                    </div>
+                </div>
+                <div class="item-btn flex-num-one ">
+                    <button data-id="1" onclick="fnshowLayer('evalLayer')">评价</button>
+                </div>
+            </li>
+            <li class="flex-display flex-display-column">
+                <div class="item-code flex-display">
+                    <span>订单号：1234567896012356</span>
+                    <span class="flex-num-one">2019-08-0 916:20:03</span>
+                </div>
+                <div class="item-info flex-display">
+                    <img src="http://cdn.duitang.com/uploads/item/201410/16/20141016202155_5ycRZ.thumb.700_0.jpeg" />
+                    <div class="flex-num-one">
+                        <p class="text-overflow-2">小气泡补水美白项目小气泡补水美白项目</p>
+                        <div class="item-info__price">
+                            <font>扣除余额：</font>¥1490
+                        </div>
+                    </div>
+                </div>
+                <div class="item-btn flex-num-one ">
+                    <button class="otherBtn" data-id="2" onclick="fnshowLayer('checkLayer')">查看评价</button>
+                </div>
+            </li>
+        </ul>
+
+        <div class="layer flex-display  flex-center-align flex-center-pack hidden" onclick="fnCloseLayer()" id="layer">
+            <!--查看评价-->
+            <div class="layer-box hidden" id="checkLayer">
+                <p class="tit">查看评价</p>
+                <div class="pro flex-display">
+                    <img src="http://cdn.duitang.com/uploads/item/201410/16/20141016202155_5ycRZ.thumb.700_0.jpeg" />
+                    <div class="pro-info flex-num-one">
+                        <div class="star flex-display">
+                            <span>项目评分</span>
+                            <div class="flex-num-one flex-display flex-center-align star-box">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="star flex-display star-top">
+                            <span>操作评分</span>
+                            <div class="flex-num-one flex-display flex-center-align star-box">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="evaluation-box text-overflow-5 ">
+                    使用体验感非常好，非常好，非常好使用体验
+                    感非常好，非常好，非常好使用体验感非常好，
+                    非常好，非常好！！！使用体验感非常好，非
+                    常好，非常好使用体验感非常好，非常好，非
+                    常好使用体验感非常好，非常好，非常好！！！
+                </div>
+            </div>
+            <!--评价弹窗-->
+            <div class="layer-box " id="evalLayer">
+                <p class="tit">发布评价</p>
+                <div class="pro flex-display">
+                    <img src="http://cdn.duitang.com/uploads/item/201410/16/20141016202155_5ycRZ.thumb.700_0.jpeg" />
+                    <div class="pro-info flex-num-one">
+                        <div class="star flex-display">
+                            <span>项目评分</span>
+                            <div class="flex-num-one flex-display flex-center-align star-box__eval" id="projectStar">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="star flex-display star-top">
+                            <span>操作评分</span>
+                            <div class="flex-num-one flex-display flex-center-align star-box__eval" id="operationStar">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="share-box">
+                    <textarea placeholder="分享你的使用体验吧~" id="textarea"></textarea>
+                </div>
+                <div class="evalBtn">
+                    <span onclick="fnSubmitAjax()">提交</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+    window.document.title = '消费记录';
+    var _starNum = 0,
+        _operationNum = 0,
+        _projectNum = 0;
+
+    var _list = [
+        {
+            id: 1,
+            code: '11111111',
+            time: '2019-08-10',
+            photo: 'http://cdn.duitang.com/uploads/item/201410/16/20141016202155_5ycRZ.thumb.700_0.jpeg',
+            sum: '卡卡卡卡阿卡卡卡',
+            type: 1,
+            price: 11,
+        },
+        {
+            id: 2,
+            code: '22222',
+            price: 10,
+            time: '2019-08-10',
+            photo: 'http://cdn.duitang.com/uploads/item/201410/16/20141016202155_5ycRZ.thumb.700_0.jpeg',
+            sum: '卡卡卡卡阿卡卡卡',
+            type: 2,
+        }
+    ]
+    
+
+    function fnshowLayer(_id) {
+        _id == 'evalLayer' ? addCls(document.getElementById('checkLayer'), 'hidden') : addCls(document.getElementById('evalLayer'), 'hidden');
+        removeCls(document.getElementById('layer'), 'hidden');
+        removeCls(document.getElementById(_id), 'hidden')
+    }    
+
+
+    document.querySelector('.container').addEventListener('scroll', function () {
+        if (this.scrollHeight - this.scrollTop === this.clientHeight) {
+            console.log("到达底部");
+
+        }
+    })
+    // 初始化点击评分操作
+    fnHandleStar(document.getElementById('projectStar'), 1);
+    fnHandleStar(document.getElementById('operationStar'), 2);
+    // 初始化切换导航
+    fnHandleNav();
+
+    // 初始化列表委托事件
+    document.querySelector('#container').addEventListener('click', function (e) {
+        if (e.target.nodeName == 'BUTTON') {
+            var element = e.srcElement || e.target;
+            //alert(element.innerHTML)
+            //alert(element.dataset.id)
+        }
+    });
+
+    function fnHandleNav() {
+        var _li = document.getElementById('navBox').getElementsByTagName('li');
+        for (let i = 0; i < _li.length; i++) {
+            _li[i].navIndex = i;
+            _li[i].addEventListener('click', function () {
+                for (var k = 0; k < _li.length; k++) {
+                    removeCls(_li[k], 'active')
+                }
+                addCls(this, 'active')
+                // 获取当前索引调用接口
+            })
+        }
+    }
+
+    // 关闭弹窗
+    function fnCloseLayer(e) {
+        var _event = window.event || e
+        console.log(_event)
+        if (_event.srcElement.id == 'layer') {
+            addCls(document.getElementById('layer'), 'hidden')
+        }
+    }
+
+    // 添加样式
+    function addCls(el, cls) {
+        if ('classList' in el) {
+            el.classList.add(cls);
+        } else {
+            var preCls = el.className;
+            var newCls = preCls + ' ' + cls;
+            el.className = newCls;
+        }
+        return el;
+    }
+
+    // 去除样式
+    function removeCls(el, cls) {
+        if ('classList' in el) {
+            el.classList.remove(cls);
+        } else {
+            var preCls = el.className;
+            var newCls = preCls.replace(cls, '');
+            el.className = newCls;
+        }
+        return el;
+    }
+    //
+    function fnHandleStar(_starParent, _num) {
+        var _starChild = _starParent.getElementsByTagName('span');
+        for (var starIndex = 0; starIndex < _starChild.length; starIndex++) {
+            _starChild[starIndex].index = starIndex;
+            _starChild[starIndex].addEventListener('click', function (e) {
+                for (var k = 0; k < _starChild.length; k++) {
+                    removeCls(_starChild[k], 'active')
+                }
+                _num = _starNum = this.index;
+                // 当前所有之前的都添加样式
+                if (_num == 1) {
+                    _projectNum = _num + 1
+                } else {
+                    _operationNum = _num + 1
+                }
+                for (var j = 0; j <= _starNum; j++) {
+                    addCls(_starChild[j], 'active')
+                }
+                return false
+            })
+        }
+
+    }
+
+    function fnSubmitAjax() {
+        addCls(document.getElementById('layer'), 'hidden');
+        var _value = document.getElementById('textarea').value
+    }
+
+</script>
+
+</html>

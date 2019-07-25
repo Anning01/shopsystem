@@ -1,0 +1,174 @@
+{% extends 'xadmin/base_site.html' %}
+{% block content-nav %}
+    <p style="text-align:center; font-size: 25px; color: black; letter-spacing:4px;"><b>店铺营销数据（日，周，月）</b></p>
+{% endblock %}
+{% block content %}
+<style>
+    .data-statistics-list {
+      padding: 0;
+      margin: 20px 0 0 0 ;
+      text-align: center;
+      display: flex;
+
+    }
+    .data-statistics-list li{
+      padding: 16px;
+      background-color: #cce5ff;
+      flex: 1;
+      border-radius: 10px;
+      margin-left: 10px;
+      list-style: none;
+    }
+    .data-statistics-list li:nth-child(1){
+      background-color: #cce5ff;
+    }
+    .data-statistics-list li:nth-child(2){
+      background-color: #d4edda;
+    }
+    .data-statistics-list li:nth-child(3){
+      background-color: #f8d7da;
+    }
+    .data-statistics-list li:nth-child(4){
+      background-color: #fff3cd;
+    }
+    .data-statistics-list li:nth-child(5){
+      background-color: #d1ecf1;
+    }
+    .data-statistics-list li:nth-child(6){
+      background-color: #d6d8d9;
+    }
+    .data-statistics-list li:nth-child(7){
+      background-color: #FFFFCC;
+    }
+    .data-statistics-list li:nth-child(8){
+      background-color: #FFCC99;
+    }
+    .data-statistics-list li:nth-child(9){
+      background-color: #CCCCFF;
+    }
+    .data-statistics-list .data-statistics-item-name{
+      margin-bottom: 3px;
+      color: #333;
+      font-size: 16px;
+
+    }
+    .data-statistics-list .data-statistics-item-value{
+      color: #777;
+      font-size: 14px;
+      font-weight: bold;
+    }
+  </style>
+  <ul class="data-statistics-list">
+
+  </ul>
+  <script type="text/javascript">
+    $(function() {
+      var master_name = $('#top-nav').find('strong').text();
+      master_name =  master_name.substring(4);
+
+      $.ajax({
+        type: 'GET',
+        url: window.location.protocol+'//'+window.location.host+'/shop_data/?shop_id='+master_name,
+        beforeSend: function(xhr) {
+          xhr.setRequestHeader("X-CSRFTOken", $.getCookie("csrftoken"))
+        },
+
+        success: function(res) {
+      var str = '';
+      for(idx in res) {
+      str += "<li><div class='data-statistics-item-name'>"+res[idx].name+"</div><div class='data-statistics-item-value'>"+res[idx].data+"</div></li>";
+      }
+      $('.data-statistics-list').append(str)
+        },
+        error: function(err) {
+        	console.log(err)
+        }
+      })
+    });
+  </script>
+    <br>
+    <hr>
+    <p style="text-align:center; font-size: 25px; color: black; letter-spacing:4px; margin: 20px auto;"><b>店铺用户增长及收支（年）</b></p>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts.min.js" charset="utf-8"></script>
+  <div id="data-statistics-chart" style="width: 100%;height:400px; margin: 20px auto; "></div>
+  <script type="text/javascript">
+  $(function() {
+        var master_name = $('#top-nav').find('strong').text();
+        master_name =  master_name.substring(4);
+        var myChart = echarts.init(document.getElementById('data-statistics-chart'));
+        $.ajax({
+          type: 'POST',
+          url: window.location.protocol+'//'+window.location.host+'/shop_data/',
+          data: {
+            shop_id: master_name
+          },
+          beforeSend: function(xhr) {
+            xhr.setRequestHeader("X-CSRFTOken", $.getCookie("csrftoken"))
+          },
+          success: function(data) {
+                      // 指定图表的配置项和数据
+          var incomeData = [], expendData = [], userData = [], dateData = [];
+
+          for (var idx in data) {
+            for (var dateIdx in data[idx]) {
+              dateData.push(dateIdx)
+              var dateItem = data[idx][dateIdx]
+              for (var itemIdx in dateItem) {
+                for (var allIdx in dateItem[itemIdx]) {
+                  if(allIdx == '收入数据'){
+                    incomeData.push(dateItem[itemIdx][allIdx])
+                  }
+                  if(allIdx == '支出数据'){
+                    expendData.push(dateItem[itemIdx][allIdx])
+                  }
+                  if(allIdx == '用户数据'){
+                    userData.push(dateItem[itemIdx][allIdx])
+                  }
+                }
+              }
+            }
+          }
+          var option = {
+              legend: {
+                  data: ['收入数据', '支出数据', '用户数据']
+              },
+    tooltip: {
+        trigger: 'axis'
+    },
+              xAxis: {
+                  type: 'category',
+                  data: dateData
+              },
+              yAxis: {
+                  type: 'value'
+              },
+              series: [{
+                  name:'收入数据',
+                  type:'line',
+                  data: incomeData
+              },
+              {
+                  name:'支出数据',
+                  type:'line',
+                  data: expendData
+              },
+              {
+                  name:'用户数据',
+                  type:'line',
+                  data: userData
+              }]
+          };
+          myChart.setOption(option);
+          },
+          error: function(err) {
+          	console.log(err)
+          }
+        })
+      });
+
+  </script>
+    <hr>
+{% endblock %}
+
+
+

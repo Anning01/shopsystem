@@ -1,0 +1,284 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>注册-店铺系统公众号</title>
+    <link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css">
+    <style media="screen">
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .form {
+            padding: 0 20px;
+            margin-top: 20px;
+        }
+
+        .form .mint-cell-wrapper {
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            margin-top: 6px;
+            background: none;
+        }
+
+        .mint-cell-text {
+            color: #777;
+        }
+
+        .btn-submit {
+            background: #5d8cfa;
+            margin-top: 80px;
+            border-radius: 30px;
+            text-align: center;
+            padding: 14px;
+            color: #fff;
+        }
+
+        .mint-popup {
+            width: 100%;
+        }
+
+        .btns {
+            border: 1px solid #eee;
+            display: flex;
+        }
+
+        .btns .btn {
+            flex: 1;
+            text-align: center;
+            line-height: 38px;
+            color: #26a2ff;
+        }
+
+        #myDate {
+            border: none;
+            -ms-flex-align: center;
+            align-items: center;
+            box-sizing: border-box;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            font-size: 16px;
+            line-height: 1;
+            min-height: inherit;
+            overflow: hidden;
+            padding: 0 10px;
+            width: 100%;
+            border-top: 1px solid #eee;
+            padding-bottom: 10px;
+            padding-top: 10px;
+            color: #888;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="form" v-cloak>
+        {% csrf_token %}
+        <mt-field placeholder="请填写激活码" type="text" v-model="code"></mt-field>
+        <mt-field placeholder="请填写邮箱号码" type="email" v-model="email"></mt-field>
+        <mt-field class="wxEl" placeholder="请填写微信号码" type="text" v-model="wxNumber"></mt-field>
+        <mt-cell :title="addressText" @click.native="openPickerAddress" is-link></mt-cell>
+        <mt-field placeholder="请填写详细地址" type="text" v-model="detailAddress"></mt-field>
+        <div class="btn-submit" @click="submit()">完成</div>
+    </div>
+
+
+    <mt-datetime-picker
+            ref="picker"
+            type="date"
+            year-format="{value} 年"
+            month-format="{value} 月"
+            date-format="{value} 日"
+            v-model="pickerValue"
+            @confirm="confirm">
+    </mt-datetime-picker>
+
+    <mt-popup
+            v-model="isShowAddress"
+            position="bottom">
+        <div class="btns" v-cloak>
+            <span class="btn btn-cancel" @click="isShowAddress = false">取消</span>
+            <span class="btn btn-define" @click="clickDefine">确定</span>
+        </div>
+        <mt-picker ref="addressPicker" :slots="myAddressSlots" @change="onMyAddressChange"></mt-picker>
+    </mt-popup>
+</div>
+
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/jquery@1.11.1/dist/jquery.js"></script>
+<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="{% static 'mypro/js/mint-ui.js' %}"></script>
+<script src="{% static 'mypro/js/address.js' %}"></script>
+<script>
+    document.cookie = "contextOpenId={{ context.openid }}";
+</script>
+<script>
+
+    new Vue({
+        el: '#app',
+        components: {},
+        data() {
+            return {
+                addressText: '请选择地址',
+                email: null,
+                wxNumber: null,
+                detailAddress: null,
+                pickerValue: null,
+                address: address3,
+                isShowAddress: false,
+                myAddressSlots: [
+                    {
+                        flex: 1,
+                        defaultIndex: 1,
+                        values: Object.keys(address3), //省份数组
+                        className: 'slot1',
+                        textAlign: 'center'
+                    }, {
+                        divider: true,
+                        content: '-',
+                        className: 'slot2'
+                    }, {
+                        flex: 1,
+                        values: [],
+                        className: 'slot3',
+                        textAlign: 'center'
+                    }, {
+                        divider: true,
+                        content: '-',
+                        className: 'slot4'
+                    }, {
+                        flex: 1,
+                        values: [],
+                        className: 'slot5',
+                        textAlign: 'center'
+                    }
+                ],
+                myAddressProvince: '',
+                myAddressCity: '',
+                myAddresscounty: '',
+                code: null,
+            }
+        },
+        created() {
+
+        },
+        methods: {
+            submit() {
+                var that = this;
+                $.ajax({
+                    type: 'POST',
+                    url: window.location.protocol + '//' + window.location.host + '/redirect_wx/',
+                    data: {
+                        infocode: that.code,
+                        email: that.email,
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("X-CSRFTOken", $.cookie("csrftoken"))
+                    },
+                    success: function (data) {
+                        if (data.code == 0) {
+                            //创建url
+                            var url = "{% url 'ShopApp:adduser' %}";
+                            //创建form
+                            var form = $("<form></form>");
+                            //设置属性
+                            form.attr("action", url);
+                            form.attr("method", "post");
+
+                            //创建input，即参数
+                            var
+                                inputcode = $("<input type='text' name='infocode' value='" + that.code + "' />"),
+                                inputWxNumber = $("<input type='text' name='wechat' value='" + that.wxNumber + "' />"),
+                                inputProvince = $("<input type='text' name='province' value='" + that.myAddressProvince + "' />"),
+                                inputCity = $("<input type='text' name='city' value='" + that.myAddressCity + "' />"),
+                                inputQuxian = $("<input type='text' name='quxian' value='" + that.myAddresscounty + "' />"),
+                                inputopenid = $("<input type='text' name='openid' value='" + $.cookie("contextOpenId") + "' />"),
+                                inputemail = $("<input type='text' name='email' value='" + that.email + "' />"),
+                                inputDetailAddress = $("<input type='text' name='address' value='" + that.detailAddress + "' />");
+                            //注入参数到表单
+                            form.append(inputWxNumber);
+                            form.append(inputcode);
+                            form.append(inputProvince);
+                            form.append(inputCity);
+                            form.append(inputopenid);
+                            form.append(inputemail);
+                            form.append(inputQuxian);
+                            form.append(inputDetailAddress);
+                            form.appendTo("body");
+                            form.hide();
+                            //提交表单
+                            form.submit();
+
+                        } else {
+                            window.MINT.Toast(data.Message)
+                        }
+
+                    }
+                })
+            },
+            // 打开选择日期弹框
+            openPicker() {
+                this.$refs.picker.open();
+                if (!this.datepicker) {
+                    this.datepicker = new Date('1995/01/01')
+                }
+            },
+            // 确认选择日期
+            confirm(val) {
+                this.birthday = this.getFormatDate(val);
+                this.birthdayText = this.jsGetAge(this.getFormatDate(val)) + '岁'
+            },
+            // 打开地址选择
+            openPickerAddress() {
+                this.isShowAddress = true;
+            },
+            // 选择地区
+            onMyAddressChange(picker, values) {
+                if (address3[values[0]]) { //这个判断类似于v-if的效果（可以不加，但是vue会报错，很不爽）
+                    picker.setSlotValues(1, Object.keys(address3[values[0]])); // Object.keys()会返回一个数组，当前省的数组
+                    picker.setSlotValues(2, address3[values[0]][values[1]]); // 区/县数据就是一个数组
+                    this.myAddressProvince = values[0];
+                    this.myAddressCity = values[1];
+                    this.myAddresscounty = values[2];
+                }
+            },
+            // 选择地址 确定
+            clickDefine() {
+                if (!this.myAddressCity || !this.myAddresscounty) {
+                    alert('请选择省市区');
+                    return
+                } else {
+                    this.isShowAddress = false;
+                    this.addressText = this.myAddressProvince + '-' + this.myAddressCity + '-' + this.myAddresscounty
+                }
+
+            },
+            // 格式化时间
+            getFormatDate(data) {
+                var date = new Date(data);
+                var month = date.getMonth() + 1;
+                var strDate = date.getDate();
+                if (month >= 1 && month <= 9) {
+                    month = month;
+                }
+                if (strDate >= 0 && strDate <= 9) {
+                    strDate = strDate;
+                }
+                return date.getFullYear() + "/" + month + "/" + strDate;
+            },
+
+        }
+    })
+</script>
+</body>
+</html>

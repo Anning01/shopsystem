@@ -1,0 +1,474 @@
+{% load static %}
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <link rel="stylesheet" type="text/css" href="{% static 'mypro/css/flex.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'mypro/css/assist.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'mypro/css/animate.css' %}"/>
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+        }
+
+        .user-box {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .user-box > .info {
+            width: 100%;
+            height: 121px;
+            position: relative;
+        }
+
+        .info-left {
+            height: 100%;
+            width: 100%;
+            padding-left: 20px;
+        }
+
+        .info-left > img {
+            width: 55px;
+            height: 55px;
+            display: block;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+        .info-left > a {
+            width: 55px;
+            height: 55px;
+            display: block;
+            margin-right: 12px;
+        }
+        .info-left > a > img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: block;
+        }
+
+        .info-left > i {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .info-left > font::before {
+            content: '';
+            z-index: 1;
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            background: url('{% static 'mypro/image/center_icon_woman@2x.png' %}') no-repeat center center;
+            background-size: 100% 100%
+        }
+
+        .info-left > i::after {
+            content: '';
+            z-index: 1;
+            width: 24px;
+            height: 24px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            background: url('{% static 'mypro/image/center_icon_man@2x.png' %}') no-repeat center center;
+            background-size: 100% 100%
+        }
+
+        .info-right {
+            padding-top: 14px;
+            padding-right: 14px;
+        }
+
+        .info-right > img,.info-right > a {
+            width: 24px;
+            height: 24px;
+            display: block;
+        }
+
+        .info-right > a > img {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .info-right > img:nth-of-type(1) {
+            margin-right: 27px;
+        }
+
+        /* 卡包样式*/
+        .card {
+            width: 100%;
+            height: auto;
+            padding-top: 30px;
+            position: relative;
+        }
+
+        .card > .card-tit {
+            font-size: 18px;
+            font-weight: 600;
+            padding: 0 0px 13px 12px;
+        }
+
+        .card-list {
+            width: 100%;
+            height: auto;
+        }
+
+        .card-list > .item {
+            width: 100%;
+            height: 133px;
+            padding-left: 27px;
+            padding-top: 22px;
+            padding-bottom: 31px;
+
+            overflow: hidden;
+        }
+
+        .card-list > .item:nth-of-type(odd) {
+            background: url('{% static 'mypro/image/center_img_card_red@2x.png' %}') no-repeat center center;
+            background-size: 100% 100%;
+        }
+
+        .card-list > .item:nth-of-type(even) {
+            background: url('{% static 'mypro/image/center_img_card_bule@2x.png' %}') no-repeat center center;
+            background-size: 100% 100%;
+        }
+
+        .item-name {
+            font-size: 21px;
+            color: #fff;
+        }
+
+        .item-balance {
+            border-right: 1px solid #fff;
+        }
+
+        .itme-balance > span:first-child {
+            font-size: 12px;
+            color: #fff;
+        }
+
+        .item-balance > span:last-child {
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .item-time {
+            text-align: center;
+            font-size: 12px;
+            color: #fff;
+        }
+
+        .f-w-color {
+            color: #fff;
+        }
+
+        .layer,
+        .code-layer {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.8)
+        }
+
+        .layer-box {
+            width: 80%;
+            height: 360px;
+            border-radius: 10px;
+            background: rgba(255, 237, 240, 1);
+            padding: 22px 28px 0;
+            overflow: hidden;
+
+        }
+
+        .layer-box__bg {
+            width: 100%;
+            height: 235px;
+            position: relative;
+
+        }
+
+        .layer-box__bg > div {
+            width: 100%;
+            height: 100%;
+            background: url('{% static 'mypro/image/my_card_img_vip@2x.png' %}') no-repeat center center;
+            background-size: 100% 100%;
+        }
+
+        .layer-box > span {
+            display: inline-block;
+            width: 47px;
+            height: 34px;
+            background: url('{% static 'mypro/image/my_card_icon_arrows@2x.png' %}') no-repeat center center;
+            background-size: 100% 100%;
+        }
+
+        .card-info {
+            width: 100%;
+            height: 50%;
+        }
+
+        .card-info > img {
+            margin-top: 24px;
+            width: 50px;
+            height: 50px;
+            display: block;
+            border-radius: 50%;
+            margin-bottom: 12px;
+        }
+
+        .card-info > p {
+            line-height: 18px;
+            font-size: 13px;
+            color: #F6425B;
+            padding: 0 43px;
+        }
+
+        .card-num {
+            position: absolute;
+            left: 0;
+            text-align: center;
+            bottom: 57px;
+            font-size: 14px;
+            color: #fff;
+            width: 100%;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .code-layer > div {
+            width: 85%;
+            min-height: 310px;
+            margin: 0 auto;
+            border-radius: 15px;
+            background: #fff;
+            padding: 5px;
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .code-layer > div > img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 15px;
+        }
+
+        .code-layer > div > i {
+            width: 70px;
+            height: 70px;
+            display: inline-block;
+            left: 50%;
+            top: 50%;
+            position: absolute;
+            margin-top: -30px;
+            margin-left: -30px;
+            border-radius: 50%;
+        }
+
+        .code-layer > span {
+            color: #fff;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<script src="https://unpkg.com/jquery@1.11.1/dist/jquery.js"></script>
+<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<body>
+<div class="user-box">
+    <div class="flex-display info">
+        <div class="flex-num-two info-left flex-display flex-center-align">
+            <img src="{{ context.icon }}"/>
+            <span>{{ context.username }}</span>
+            {% if context.gender %}
+                <i></i>
+
+            {% else %}
+                <font></font>
+
+            {% endif %}
+
+        </div>
+        <div class="flex-num-one info-right flex-right-pack flex-display">
+
+
+            <img src="{% static 'mypro/image/center_icon_code@2x.png' %}" onclick="fnShowCodeLayer()"/>
+            <a href="{% url 'ShopApp:expenseinfo' context.openid %}"><img src="{% static 'mypro/image/center_icon_record@2x.png' %} "/></a>
+
+        </div>
+    </div>
+    <div class="line"></div>
+    <!--卡包-->
+    <div class="card">
+        <p class="card-tit">卡包</p>
+        <ul class="card-list">
+
+            {% for foo in userka %}
+                <li class="item flex-display flex-display-column" onclick="fnShowLayer({{ foo.id }})">
+                    <div class="item-name text-overflow-1">{{ foo.usergoods }}</div>
+                    <div class="flex-num-one flex-display flex-right-align ">
+                        <div class="item-balance flex-num-one flex-display flex-center-align">
+                            <span class="f-w-color">可用余额：</span>
+                            <span>{{ foo.money }}元</span>
+                        </div>
+                        <div class="flex-num-one item-time">
+                            {% ifequal foo.over_past_time 0 %}
+                                已过期
+                            {% else %}
+                                有效期：{{ foo.over_past_time }}天
+                            {% endifequal %}
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+
+        </ul>
+    </div>
+    <!--卡包详情弹窗-->
+    <div class="layer flex-display  flex-center-align flex-center-pack hidden" id="layer" onclick="fnCloseLayer()">
+        <div class="layer-box flex-display flex-display-column flex-center-align ">
+            <div class="layer-box__bg flex-num-one" id="parentBox">
+                {#                <div>#}
+                {#                    <div class="card-info flex-display flex-display-column flex-center-align">#}
+                {#                        <img#}
+                {#                                src="http://cdn.duitang.com/uploads/item/201410/16/20141016202155_5ycRZ.thumb.700_0.jpeg"/>#}
+                {#                        <p class="text-overflow-2">美白专享卡小气泡清洁会员卡专享卡 </p>#}
+                {#                    </div>#}
+                {#                    <span class="card-num">剩余次数:12</span>#}
+                {#                </div>#}
+            </div>
+            <span onclick="fnHandleSwitch()"></span>
+        </div>
+    </div>
+    <!--二维码弹窗-->
+    <div class="code-layer flex-display flex-display-column flex-center-pack flex-center-align hidden"
+         id="codeLayer">
+        <div class="animated  bounceInDown">
+            <img src="{{ context.qrcode.url }}"
+                 id="codeImg"/>
+        </div>
+        <span class="animated  bounceInUp">长按图片可保存</span>
+    </div>
+</div>
+</body>
+<script>
+    window.document.title = '个人中心';
+
+    var currentIndex = 0;
+    var _list = [];
+
+    // 动态拼接数据
+    function initList(_list) {
+        var _parentId = document.getElementById('parentBox');
+        var _html = '';
+        for (var index = 0; index < _list.length; index++) {
+            _html += '<div id="' + 'item_' + index + '" class="hidden animated bounceInUp">' +
+                '<div class="card-info flex-display flex-display-column flex-center-align">' +
+                '<img src="' + _list[index].url + '"/>' +
+                '<p>' + _list[index].name + '</p>' +
+                '</div>' +
+                '<span class="card-num">剩余次数：' + _list[index].num + '</span>' +
+                '</div>';
+        }
+        _parentId.innerHTML = _html;
+        document.getElementById('item_0').className = 'animated bounceInUp'
+    }
+
+    function fnShowCodeLayer() {
+        removeCls(document.getElementById('codeLayer'), 'hidden')
+    }
+
+    function fnShowLayer(_id) {
+        removeCls(document.getElementById('layer'), 'hidden');
+        $.ajax({
+            type: 'GET',
+            url: window.location.protocol + '//' + window.location.host + '/getkainfo/',
+            data: {
+                _id: _id
+            },
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("X-CSRFTOken", $.cookie("csrftoken"))
+            },
+            success: function (data) {
+                if (data.length) {
+                    _list = data;
+                    initList(data)
+                }
+
+            }
+        })
+
+    }
+
+    // 点击下一张卡片
+    function fnHandleSwitch() {
+        if (currentIndex < _list.length-1) {
+            document.getElementById('item_' + currentIndex).className = 'hidden animated bounceInUp';
+            document.getElementById('item_' + Number(currentIndex + 1)).className = ' animated bounceInUp';
+            currentIndex++
+        }
+    }
+
+    // 关闭弹窗
+    function fnCloseLayer(e) {
+        var _event = window.event || e;
+        if (_event.srcElement.id == 'layer') {
+            currentIndex = 0;
+            _list = [];
+            addCls(document.getElementById('layer'), 'hidden')
+        }
+    }
+
+    // 添加样式
+    function addCls(el, cls) {
+        if ('classList' in el) {
+            el.classList.add(cls);
+        } else {
+            var preCls = el.className;
+            var newCls = preCls + ' ' + cls;
+            el.className = newCls;
+        }
+        return el;
+    }
+
+    // 去除样式
+    function removeCls(el, cls) {
+        if ('classList' in el) {
+            el.classList.remove(cls);
+        } else {
+            var preCls = el.className;
+            var newCls = preCls.replace(cls, '');
+            el.className = newCls;
+        }
+        return el;
+    }
+
+    // 监听二维码点击结束 清除时间
+    document.getElementById("codeLayer").addEventListener("touchend", function (e) {
+        if (e.target && e.target.nodeName != "IMG") {
+            addCls(document.getElementById('codeLayer'), 'hidden')
+        }
+    }, false);
+
+
+</script>
+
+</html>
