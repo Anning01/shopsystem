@@ -17,8 +17,8 @@ oss2
 
 #### 使用说明
 环境源代码，拿下来覆盖本地的环境 一个django xamdin 和 富文本
-链接：https://pan.baidu.com/s/1nCo-6Kpafj9BsFKIU5KjmQ 
-提取码：q3eo 
+链接：https://pan.baidu.com/s/1C399ow_vWcaxC30kVvHQZQ 
+提取码：b2yf 
 
 
 #### 参与贡献
