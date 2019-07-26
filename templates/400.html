@@ -1,25 +1,42 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>400</title>
-  <style media="screen">
-    h3{
-      text-align: center;
-      margin-top: 100px;
-      font-size: 32px;
-      color: #333;
-    }
-    p{
-      text-align: center;
-      color: #888;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>400</title>
+    <style media="screen">
+
+        h3 {
+            text-align: center;
+            font-size: 32px;
+            color: #333;
+        }
+
+        p {
+            text-align: center;
+            color: #888;
+        }
+
+        .no-info-img {
+            text-align: center;
+            margin: 0 auto;
+            margin-bottom: 20px;
+            width: 60%;
+            margin-top: 60px;
+        }
+
+        .no-info-img .max {
+            max-width: 100%;
+        }
+    </style>
 </head>
 <body>
-  <h3>400</h3>
-  <p>您访问的页面去火星啦~</p>
+<div class="no-info-img">
+    <img class="max" src="{% static 'mypro/image/noinfo.png' %}" alt="">
+</div>
+<h3>400</h3>
+<p>您访问的页面去火星啦~</p>
 </body>
 </html>

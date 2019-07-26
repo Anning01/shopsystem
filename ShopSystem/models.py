@@ -258,7 +258,8 @@ class UserExpend(models.Model):
     service_name = models.CharField(max_length=100, verbose_name='服务名称')
     number = models.SmallIntegerField(default=1, verbose_name='次数')
     xf_time = models.DateTimeField(auto_now_add=True, verbose_name='消费时间')
-    grade = models.SmallIntegerField(default=5, verbose_name='评分')
+    serve_grade = models.SmallIntegerField(default=5, verbose_name='项目评分')
+    oper_grade = models.SmallIntegerField(default=5, verbose_name='操作员评分')
     evaluate = models.TextField(blank=True, verbose_name='评价')
     status = models.NullBooleanField(default=None, choices=((None, ''), (False, '扣次'), (True, '扣余额')), editable=False,
                                      verbose_name='会员卡详情')
@@ -266,6 +267,15 @@ class UserExpend(models.Model):
     ka = models.ForeignKey(to='Userbanka', on_delete=models.SET_NULL, blank=True, editable=False, null=True,
                            verbose_name='会员卡')
     shop = models.ForeignKey(to='MallShop', on_delete=models.PROTECT, editable=False, verbose_name='所属店铺')  # 创建该数据的登录用户
+
+    def is_evaluate(self):
+        return 1 if self.evaluate else 0
+
+    def user_icon(self):
+        text = """<img src="%s" style="width:50px;"/>""" % self.name.icon if self.name.icon else ''
+        return mark_safe(text)
+
+    user_icon.short_description = '用户头像'
 
     def __str__(self):
         return str(self.name)
@@ -306,7 +316,7 @@ class BillDetail(models.Model):
 # 激活码
 class ActivationCode(models.Model):
     verify_code = models.CharField(max_length=255, verbose_name='激活码')
-    is_use = models.BooleanField(default=False, verbose_name='是否使用')
+    is_use = models.BooleanField(default=True, verbose_name='使用')
     addtime = models.DateTimeField(auto_now_add=True, verbose_name='激活时间')
 
     def userinfo(self):

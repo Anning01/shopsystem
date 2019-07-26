@@ -22,6 +22,7 @@ from django.utils.encoding import force_text
 
 # 允许所有人删除
 from ShopSystem.views import TestView
+from shop_manage.base_settings import myreqmaster
 
 
 class AllowDelete(object):
@@ -352,7 +353,7 @@ class UserbankaAdmin(AccessLevel, AllowDelete, ShopUserCreate):
     show_detail_fields = ['users']
     show_all_rel_details = True
     # 设置搜索字段
-    search_fields = ['users', 'id']
+    search_fields = ['users__username', 'id']
     # 设置过滤字段
     list_filter = ['usergoods', 'past_time', 'money']
     model_icon = 'fa fa-id-card'
@@ -421,9 +422,9 @@ class UserbankaAdmin(AccessLevel, AllowDelete, ShopUserCreate):
             """
             办卡返利
             """
-            a = '自己域名'
+
             data = requests.get(
-                '{}?openid={}'.format(a, self.new_obj.users.openid), )
+                '{}?openid={}'.format(myreqmaster, self.new_obj.users.openid), )
             openid_dict = data.content.decode('utf-8')
             openid = eval(openid_dict).get('openid', '')
             if openid:
@@ -436,7 +437,7 @@ class UserbankaAdmin(AccessLevel, AllowDelete, ShopUserCreate):
                         masuser.save()
                         feesource = '【店铺】【{0}】办理会员卡【{1}】，您获得收益【{2}】元'.format(self.new_obj.users, self.new_obj.usergoods,
                                                                              ratio)
-                        url = '{}'.format(a)
+                        url = '{}'.format(myreqmaster)
                         data = {
                             'openid': masuser.openid,
                             'msg': feesource
@@ -503,7 +504,7 @@ class OperatorAdmin(AccessLevel, AllowDelete, ShopUserCreate):
     show_detail_fields = ['users', 'name']
     show_all_rel_details = True
     # 设置搜索字段
-    search_fields = ['users', 'name']
+    search_fields = ['users__username', 'name']
     # 设置过滤字段
     list_filter = ['is_status', 'satisfaction', 'addtime', 'money']
     model_icon = 'fa fa-free-code-camp'
@@ -516,7 +517,8 @@ class OperatorAdmin(AccessLevel, AllowDelete, ShopUserCreate):
 
     # list页面直接编辑
     list_editable = (
-        'name'
+        'name',
+        'is_status'
     )
     # 自动刷新
     # refresh_times = (3, 5, 10)
@@ -580,15 +582,16 @@ class OperatorAdmin(AccessLevel, AllowDelete, ShopUserCreate):
 
 class UserExpendAdmin(AccessLevel, AllowDelete, ShopUserCreate):
     # 设置显示字段
-    list_display = ['order_nub', 'name', 'operator', 'service_name_number', 'xf_time', 'grade', 'evaluate', 'payment',
+    list_display = ['order_nub', 'user_icon', 'name', 'operator', 'service_name_number', 'xf_time', 'serve_grade',
+                    'oper_grade', 'evaluate', 'payment',
                     'status',
                     'ka']
     show_detail_fields = ['order_nub']
     show_all_rel_details = True
     # 设置搜索字段
-    search_fields = ['order_nub', 'name', 'evaluate']
+    search_fields = ['order_nub', 'name__username']
     # 设置过滤字段
-    list_filter = ['name', 'operator', 'service_name', 'number', 'xf_time', 'grade', 'payment']
+    list_filter = ['name', 'operator', 'service_name', 'number', 'xf_time', 'serve_grade', 'oper_grade', 'payment']
     model_icon = 'fa fa-money'
     # list中哪个字段带链接，点击可以进入编辑
     list_display_links = ("order_nub",)
@@ -612,7 +615,7 @@ class UserExpendAdmin(AccessLevel, AllowDelete, ShopUserCreate):
     ordering = ['-xf_time']
 
     # 不显示字段
-    exclude = ['shop']
+    exclude = ['shop', 'serve_grade', 'oper_grade', 'evaluate']
 
     # 自读字段
     readonly_fields = ['service_name', 'order_nub', 'shop']
@@ -709,9 +712,10 @@ class UserExpendAdmin(AccessLevel, AllowDelete, ShopUserCreate):
                 消费返利
                 """
                 price = self.new_obj.user_service.money * self.new_obj.number
-                a = '自己域名'
+
+                # 这里去获取上级
                 data = requests.get(
-                    '{}?openid={}'.format(a, self.new_obj.name.openid), )
+                    '{}?openid={}'.format(myreqmaster, self.new_obj.name.openid), )
                 openid_dict = data.content.decode('utf-8')
                 openid = eval(openid_dict).get('openid', '')
                 if openid:
@@ -725,7 +729,7 @@ class UserExpendAdmin(AccessLevel, AllowDelete, ShopUserCreate):
                             feesource = '【店铺】【{0}】消费项目【{1}】，您获得收益【{2}】元'.format(self.new_obj.name,
                                                                                 self.new_obj.user_service,
                                                                                 ratio)
-                            url = '{}'.format(a)
+                            url = '{}'.format(myreqmaster)
                             data = {
                                 'openid': masuser.openid,
                                 'msg': feesource
@@ -751,43 +755,6 @@ class UserExpendAdmin(AccessLevel, AllowDelete, ShopUserCreate):
                                                                              self.new_obj.user_service, price)
                     BillDetail.objects.create(money=price, status=True, remark=remark, shop=self.request.user)
                 super().save_models()
-
-    def post_response(self):
-        """
-                Determines the HttpResponse for the add_view stage.
-                """
-        request = self.request
-
-        msg = _(
-            'The %(name)s "%(obj)s" was added successfully.') % {'name': force_text(self.opts.verbose_name),
-                                                                 'obj': "<a class='alert-link' href='%s'>%s</a>" % (
-                                                                     self.model_admin_url('change',
-                                                                                          self.new_obj._get_pk_val()),
-                                                                     force_text(self.new_obj))}
-
-        if "_continue" in request.POST:
-            self.message_user(
-                msg + ' ' + _("You may edit it again below."), 'success')
-            return self.model_admin_url('change', self.new_obj._get_pk_val())
-
-        if "_addanother" in request.POST:
-            self.message_user(msg + ' ' + (_("You may add another %s below.") % force_text(self.opts.verbose_name)),
-                              'success')
-            return request.path
-        else:
-            # 我们发过了就把 is_msg 改成False，这样系统就不会在调用一次
-            if self.is_msg:
-                self.message_user(msg, 'success')
-
-            # Figure out where to redirect. If the user has change permission,
-            # redirect to the change-list page for this object. Otherwise,
-            # redirect to the admin index.
-            if "_redirect" in request.POST:
-                return request.POST["_redirect"]
-            elif self.has_view_permission():
-                return self.model_admin_url('changelist')
-            else:
-                return self.get_admin_url('index')
 
 
 class BillDetailAdmin(AccessLevel, NotAllowDelete, ShopUserCreate):

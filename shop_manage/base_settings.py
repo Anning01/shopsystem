@@ -33,7 +33,6 @@ SITE_END_TITLE = ''  # 网站的名称
 SITE_DESCRIPTION = ''  # 描述
 SITE_KEYWORDS = ''
 
-
 AUTH_USER_MODEL = 'ShopSystem.MallShop'
 
 # ------------------------邮箱配置-----------------------------------------
@@ -44,7 +43,6 @@ EMAIL_PORT = 465
 EMAIL_HOST_USER = ''  # 帐号
 EMAIL_HOST_PASSWORD = ''  # 到邮箱里开通
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
 
 # ---------------------------------------------------oss设置------------------------------------------------------------ #
 
@@ -62,9 +60,9 @@ MEDIA_URL = ''
 
 # ---------------------------------------------------oss设置------------------------------------------------------------ #
 
-
-# WEB_URL = 'https://media.sailafeinav.com'
-WEB_URL = PREFIX_URL + OSS_INTERIOR_WEB_URL
+myreqmaster = ''
+myyaoqingma = ''
+WEB_URL = ''
 """富文本配置"""
 UEDITOR_SETTINGS = {
     "config": {
@@ -79,6 +77,6 @@ UEDITOR_SETTINGS = {
 RUL_MEDIA_ROOT = ALIYUN_OSS_CNAME + MEDIA_URL
 EGP_MEDIA_ROOT = WEB_URL + MEDIA_URL
 
-
-# 重定向的域名 我自己和我公众号交互
-mygzhurl = ''
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': ['rest_framework.renderers.JSONRenderer']
+}

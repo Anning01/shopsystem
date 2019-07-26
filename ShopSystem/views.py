@@ -8,7 +8,7 @@ import oss2
 import requests
 from django.db.models.aggregates import Sum
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 import qrcode as qrcode
 from django.utils.decorators import method_decorator
 from rest_framework import status
@@ -16,9 +16,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from xadmin.views import CommAdminView
 from django.contrib.auth.models import Group
+
+from ShopSystem.Serializers import UserExpendSerializer, mypage
 from ShopSystem.models import MallUser, MallShop, BillDetail, Userbanka, Operator, ActivationCode, MallServiceUserGoods, \
     UserExpend
-from shop_manage.base_settings import ACCESS_KEY_ID, ACCESS_KEY_SECRET, BUCKET_NAME, mygzhurl
+from shop_manage.base_settings import ACCESS_KEY_ID, ACCESS_KEY_SECRET, BUCKET_NAME, myyaoqingma
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -80,7 +82,7 @@ class OpeBalance(APIView):
 
         # TODO 发到用户的公众号给用户发送信息
         feesource += feesource_ca
-        url = mygzhurl
+        url = '{}'.format(myyaoqingma)
         data = {
             'openid': user.openid,
             'msg': feesource
@@ -112,7 +114,7 @@ class AddUserView(APIView):
 
         openid = req.POST.get('openid', '')
         if not openid:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return render_to_response("400.html")
         # 手机号
         phone = req.POST.get('phone', '')
         # 省
@@ -139,7 +141,7 @@ class AddUserView(APIView):
             try:
                 user = MallUser.objects.get(openid=openid)
             except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                return render_to_response("400.html")
             user.phone = phone
             user.province = province
             user.city = city
@@ -157,16 +159,16 @@ class AddUserView(APIView):
             # 激活码
             infocode = req.POST.get('infocode', '')
 
-            code = ActivationCode.objects.filter(verify_code=infocode, is_use=False)
+            code = ActivationCode.objects.filter(verify_code=infocode, is_use=True)
             if not code:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            code.update(is_use=True)
+                return render_to_response("400.html")
+            code.update(is_use=False)
             # 店铺昵称
             name = req.POST.get('name', '')
             try:
                 user = MallShop.objects.get(openid=openid)
             except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                return render_to_response("400.html")
             user.province = province
             user.city = city
             user.quxian = quxian
@@ -189,11 +191,11 @@ class ShopDataView(APIView):
         shop_id = req.GET.get('shop_id', '')
 
         if not shop_id:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return render_to_response("400.html")
         try:
             shop = MallShop.objects.get(username=shop_id)
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return render_to_response("400.html")
         now = datetime.datetime.now()
 
         shop_month_data = BillDetail.objects.filter(shop=shop, sz_time__gte=datetime.date(now.year, now.month, 1))
@@ -253,11 +255,11 @@ class ShopDataView(APIView):
         shop_id = req.POST.get('shop_id', '')
 
         if not shop_id:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return render_to_response("400.html")
         try:
             shop = MallShop.objects.get(username=shop_id)
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return render_to_response("400.html")
         now = datetime.datetime.now()
 
         year = now.year
@@ -327,7 +329,7 @@ class AddShopUserView(APIView):
                 return HttpResponseRedirect('/redirect_wx/?type=user')
             context = MallUser.objects.filter(openid=openid).first()
             if not context:
-                return HttpResponseRedirect('/redirect_wx/?type=user')
+                return render_to_response('noshopuserpage.html')
             if context.phone:
                 userka = Userbanka.objects.filter(users=context)
                 return render(req, 'index.html', context={'context': context, 'userka': userka})
@@ -356,7 +358,7 @@ class AddShopUserView(APIView):
         """
         data_type = req.POST.get('data_type', '')
         if not data_type:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            render_to_response("400.html")
         nickname = req.POST.get('nickname', '')
         icon = req.POST.get('icon', '')
         openid = req.POST.get('openid', '')
@@ -369,10 +371,10 @@ class AddShopUserView(APIView):
         if data_type == 'shop':
             phone = req.POST.get('phone', '')
             if not phone:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                return render_to_response("400.html")
             is_shop_user = MallShop.objects.filter(username=phone)
             if is_shop_user:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                return render_to_response("400.html")
             group = Group.objects.filter(id=1).first()
 
             brand_name = '店铺统一昵称'  # 店铺统一昵称
@@ -398,9 +400,10 @@ class AddShopUserView(APIView):
             shop.save()
             shop.name = '{}'.format(brand_name + str(shop.id) + '号店铺')
 
-            UserQRcode("{}?type={}&shop={}&openid={}".format(mygzhurl, 'user',
-                                                                                                       shop.username,
-                                                                                                       shop.openid),
+            # 生成邀请码
+            UserQRcode("{}?type={}&shop={}&openid={}".format(myyaoqingma, 'user',
+                                                             shop.username,
+                                                             shop.openid),
                        shop.id, 0)
             if not group:
                 group = Group.objects.first()
@@ -411,7 +414,7 @@ class AddShopUserView(APIView):
             shop_name = req.POST.get('shop', '')
             shop = MallShop.objects.filter(username=shop_name)
             if not shop_name or not openid or not shop:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                return render_to_response("400.html")
 
             is_user = MallUser.objects.filter(openid=openid)
             if is_user:
@@ -436,9 +439,9 @@ class AddShopUserView(APIView):
             if address:
                 user.address = address
             user.save()
-            UserQRcode("{}?code={}&shop={}&openid={}".format(mygzhurl, data_type,
-                                                                                                       shop.first().username,
-                                                                                                       user.openid),
+            UserQRcode("{}?code={}&shop={}&openid={}".format(myyaoqingma, data_type,
+                                                             shop.first().username,
+                                                             user.openid),
                        user.id, 1)
             return Response({'code': 0, 'Message': '新增用户成功', 'result': ''})
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -465,8 +468,8 @@ class RrdirectWechatView(APIView):
         openid = req.GET.get('openid', '')
         if not request_type:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        url = '{}?code={}&shop={}&openid={}'.format(mygzhurl, request_type, shop,
-                                                                                              openid)
+        url = '{}?code={}&shop={}&openid={}'.format(myyaoqingma, request_type, shop,
+                                                    openid)
         return HttpResponseRedirect(url)
 
     def post(self, req, *args, **kwargs):
@@ -475,7 +478,7 @@ class RrdirectWechatView(APIView):
         valemail = ValidateEmail(email)
         if not valemail:
             return Response({'code': 1, 'Message': '请输入一个正确的邮箱'})
-        code = ActivationCode.objects.filter(verify_code=infocode, is_use=False)
+        code = ActivationCode.objects.filter(verify_code=infocode, is_use=True)
         if not code:
             return Response({'code': 1, 'Message': '激活码错误'})
         return Response({'code': 0, 'Message': '邮箱和激活码正确'})
@@ -529,16 +532,82 @@ class GetKaInfoView(APIView):
             return Response(data)
         return Response({'message': '没有调用'})
 
+    def post(self, req, *args, **kwargs):
+        shop_id = req.POST.get('shop_id', '')
+        try:
+            shop = MallShop.objects.get(username=shop_id)
+        except:
+            return render_to_response('400.html')
+        return Response({'icon': shop.qrcode.url})
+
 
 class ExpenseInfoView(APIView):
     def get(self, req, *args, **kwargs):
+        code = req.GET.get('code', '')
         openid = kwargs.get('openid', '')
         if not openid:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
-            MallUser.objects.get(openid=openid)
+            user = MallUser.objects.get(openid=openid)
         except:
-            return Response()
-        # UserExpend.objects.filter()
-        # return render(req, 'record.html', )
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+            return render_to_response("400.html")
+        if code:
+            if code == '1':
+                userinfo = UserExpend.objects.filter(name=user)
+            elif code == '2':
+                userinfo = UserExpend.objects.filter(name=user, evaluate='')
+            elif code == '3':
+                userinfo = UserExpend.objects.filter(name=user).exclude(evaluate='')
+            else:
+                return render_to_response("400.html")
+            page = mypage()
+            page_list = page.paginate_queryset(userinfo, self.request, self)
+            ser = UserExpendSerializer(instance=page_list, many=True)
+            return page.get_paginated_response(ser.data)
+        return render(req, 'record.html', {'content': user})
+
+    def post(self, req, *args, **kwargs):
+        expend = req.POST.get('expend', '')
+        serve_grade = req.POST.get('serve_grade', '')
+        oper_grade = req.POST.get('oper_grade', '')
+        evaluate = req.POST.get('evaluate', '')
+
+        if not expend:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serex = UserExpend.objects.get(id=expend)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if serve_grade and oper_grade and evaluate:
+            try:
+                serve_grade = int(serve_grade)
+                oper_grade = int(oper_grade)
+
+            except Exception as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            serex.serve_grade = serve_grade
+            serex.oper_grade = oper_grade
+            serex.evaluate = evaluate
+            serex.save()
+            ser = UserExpendSerializer(instance=serex, many=False)
+            return Response({'code': 0, 'Message': '评论成功', 'reslut': ser.data})
+
+        else:
+            data = {
+                'serve_grade': serex.serve_grade,
+                'oper_grade': serex.oper_grade,
+                'evaluate': serex.evaluate,
+                'icon': serex.user_service.icon.url,
+            }
+
+            return Response(data)
+
+
+class UserExpenseInfoView(APIView):
+    def get(self, req, *args, **kwargs):
+        _pk = kwargs.get('pk', '')
+        try:
+            serex = UserExpend.objects.get(id=_pk)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return render_to_response('detail.html', {'serex': serex})

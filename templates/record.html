@@ -201,6 +201,7 @@
             height: 84px;
             display: block;
             margin-right: 8px;
+            border: 1px solid #e5e5e5;
         }
 
         .pro-info {
@@ -221,7 +222,7 @@
             margin-right: 10px;
         }
 
-        .star-box>span {
+        .star-box > span {
             width: 18px;
             height: 18px;
             display: inline-block;
@@ -230,7 +231,7 @@
             background-size: 100% 100%
         }
 
-        .star-box__eval>span {
+        .star-box__eval > span {
             width: 18px;
             height: 18px;
             display: inline-block;
@@ -239,11 +240,10 @@
             background-size: 100% 100%
         }
 
-        .star-box__eval>span.active {
-            background: url('{% static 'mypro/image/press@2x.png' %}.') no-repeat center center;
+        .star-box__eval > span.active {
+            background: url('{% static 'mypro/image/press@2x.png' %}') no-repeat center center;
             background-size: 100% 100%
         }
-
         .star-top {
             margin-top: 10px
         }
@@ -296,9 +296,36 @@
             border: none;
             border-radius: 22px;
         }
+
+        .opacity {
+            opacity: 1;
+        }
+
+        .toast-box {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 100;
+
+        }
+
+        .toast-box > span {
+            margin: 0 auto;
+            background: #333;
+            text-align: center;
+            padding: 5px;
+            font-size: 12px;
+            border-radius: 5px;
+            color: #fff;
+            display: inline-block;
+        }
+
     </style>
 </head>
-
+<script src="https://unpkg.com/jquery@1.11.1/dist/jquery.js"></script>
+<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 <body>
     <div class="record-box flex-display flex-display-column">
         <nav>
@@ -308,87 +335,35 @@
                 <li class="flex-num-one" data-id="3">已评价</li>
             </ul>
         </nav>
-        <ul class="container flex-num-one" id="container">
-            <li class="flex-display flex-display-column">
-                <div class="item-code flex-display">
-                    <span>订单号：1234567896012356</span>
-                    <span class="flex-num-one">2019-08-0 916:20:03</span>
-                </div>
-                <div class="item-info flex-display">
-                    <img src="http://cdn.duitang.com/uploads/item/201410/16/20141016202155_5ycRZ.thumb.700_0.jpeg" />
-                    <div class="flex-num-one">
-                        <p class="text-overflow-2">小气泡补水美白项目小气泡补水美白项目</p>
-                        <div class="item-info__price">
-                            <font>扣除余额：</font>¥1490
-                        </div>
-                    </div>
-                </div>
-                <div class="item-btn flex-num-one ">
-                    <button data-id="1" onclick="fnshowLayer('evalLayer')">评价</button>
-                </div>
-            </li>
-            <li class="flex-display flex-display-column">
-                <div class="item-code flex-display">
-                    <span>订单号：1234567896012356</span>
-                    <span class="flex-num-one">2019-08-0 916:20:03</span>
-                </div>
-                <div class="item-info flex-display">
-                    <img src="http://cdn.duitang.com/uploads/item/201410/16/20141016202155_5ycRZ.thumb.700_0.jpeg" />
-                    <div class="flex-num-one">
-                        <p class="text-overflow-2">小气泡补水美白项目小气泡补水美白项目</p>
-                        <div class="item-info__price">
-                            <font>扣除余额：</font>¥1490
-                        </div>
-                    </div>
-                </div>
-                <div class="item-btn flex-num-one ">
-                    <button class="otherBtn" data-id="2" onclick="fnshowLayer('checkLayer')">查看评价</button>
-                </div>
-            </li>
-        </ul>
-
+        <ul class="container flex-num-one" id="container"></ul>
         <div class="layer flex-display  flex-center-align flex-center-pack hidden" onclick="fnCloseLayer()" id="layer">
             <!--查看评价-->
             <div class="layer-box hidden" id="checkLayer">
                 <p class="tit">查看评价</p>
                 <div class="pro flex-display">
-                    <img src="http://cdn.duitang.com/uploads/item/201410/16/20141016202155_5ycRZ.thumb.700_0.jpeg" />
+                    <img src="" id="proIcon"/>
                     <div class="pro-info flex-num-one">
                         <div class="star flex-display">
                             <span>项目评分</span>
-                            <div class="flex-num-one flex-display flex-center-align star-box">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
+                            <div class="flex-num-one flex-display flex-center-align star-box" id="checkStar">
+
                             </div>
                         </div>
                         <div class="star flex-display star-top">
                             <span>操作评分</span>
-                            <div class="flex-num-one flex-display flex-center-align star-box">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
+                            <div class="flex-num-one flex-display flex-center-align star-box" id="handleStar">
+
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="evaluation-box text-overflow-5 ">
-                    使用体验感非常好，非常好，非常好使用体验
-                    感非常好，非常好，非常好使用体验感非常好，
-                    非常好，非常好！！！使用体验感非常好，非
-                    常好，非常好使用体验感非常好，非常好，非
-                    常好使用体验感非常好，非常好，非常好！！！
-                </div>
+                <div class="evaluation-box text-overflow-5 " id="evaluation"></div>
             </div>
             <!--评价弹窗-->
             <div class="layer-box " id="evalLayer">
                 <p class="tit">发布评价</p>
                 <div class="pro flex-display">
-                    <img src="http://cdn.duitang.com/uploads/item/201410/16/20141016202155_5ycRZ.thumb.700_0.jpeg" />
+                    <img id="productAvatar" />
                     <div class="pro-info flex-num-one">
                         <div class="star flex-display">
                             <span>项目评分</span>
@@ -420,50 +395,106 @@
                 </div>
             </div>
         </div>
+        <div class="toast-box flex-display flex-center-align hidden " id="toast">
+            <span class="fadeIn" id="toastMsg"></span>
+        </div>
     </div>
 
 </body>
 <script>
     window.document.title = '消费记录';
+
     var _starNum = 0,
         _operationNum = 0,
+        _isNext = '',
+        _code = 1,
+        expend_id = '',
         _projectNum = 0;
 
-    var _list = [
-        {
-            id: 1,
-            code: '11111111',
-            time: '2019-08-10',
-            photo: 'http://cdn.duitang.com/uploads/item/201410/16/20141016202155_5ycRZ.thumb.700_0.jpeg',
-            sum: '卡卡卡卡阿卡卡卡',
-            type: 1,
-            price: 11,
-        },
-        {
-            id: 2,
-            code: '22222',
-            price: 10,
-            time: '2019-08-10',
-            photo: 'http://cdn.duitang.com/uploads/item/201410/16/20141016202155_5ycRZ.thumb.700_0.jpeg',
-            sum: '卡卡卡卡阿卡卡卡',
-            type: 2,
+
+    // 调用接口
+    fnGetData();
+
+    function fnGetData() {
+        $.ajax({
+            type: 'GET',
+            url: window.location.protocol + '//' + window.location.host + '/expenseinfo/{{ content.openid }}/',
+            data: {
+                code: _code
+            },
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("X-CSRFTOken", $.cookie("csrftoken"))
+            },
+            success: function (data) {
+                _isNext = data.next;
+                if (data.results.length) {
+                    fnInitData(data.results)
+                }
+                if(!data.count) {
+                    document.getElementById('container').innerHTML = ''
+                }
+            }
+        })
+    }
+
+    // 初始化dom渲染
+    function fnInitData(_list) {
+        var _parentId = document.getElementById('container');
+        addCls(_parentId, 'opacity');
+        var _html = '';
+        for (var index = 0; index < _list.length; index++) {
+            console.log(_list[index].user_service_icon);
+            var _li = document.createElement('li');
+            _li.className = 'flex-display flex-display-column';
+            _html +=
+                '<div  class="item-code flex-display" data-id='+_list[index].id+'>' +
+                '<span data-id='+_list[index].id+'>订单号：' + _list[index].order_nub + '</span>' +
+                '<span class="flex-num-one" data-id='+_list[index].id+'>' + _list[index].xf_time + '</span>' +
+                '</div>' +
+                '<div class="item-info flex-display" data-id='+_list[index].id+'>' +
+                '<img src=' + _list[index].user_service_icon + ' data-id='+_list[index].id+' id='+'productIcon'+_list[index].id+'>' +
+                '<div class="flex-num-one" data-id='+_list[index].id+'>' +
+                '<p class="text-overflow-2" data-id='+_list[index].id+'>' + _list[index].service_name + '</p>' +
+                '<div class="item-info__price" data-id='+_list[index].id+'><font data-id='+_list[index].id+'>扣除余额：</font>¥' + _list[index].user_service_money + '</div>' +
+                '</div>' +
+                '</div>' +
+                '<div class="item-btn flex-num-one " data-id='+_list[index].id+'>' +
+                '<button data-id=' + _list[index].id + ' data-type=' + _list[index].is_evaluate + '>评价</button>' +
+                ' </div>' ;
+                _li.innerHTML = _html
+                _parentId.appendChild(_li);
+                _html = ''
         }
-    ]
-    
+        var _btnList = document.getElementsByTagName('button');
+        for (var index = 0; index < _btnList.length; index++) {
+            if (_btnList[index].getAttribute('data-type') == 1) {
+                _btnList[index].innerHTML = '查看评价';
+                addCls(_btnList[index], 'otherBtn')
+            }
+        }
+        setTimeout(() => {
+            removeCls(_parentId, 'opacity')
+        }, 100);
+
+    }
+
 
     function fnshowLayer(_id) {
         _id == 'evalLayer' ? addCls(document.getElementById('checkLayer'), 'hidden') : addCls(document.getElementById('evalLayer'), 'hidden');
         removeCls(document.getElementById('layer'), 'hidden');
         removeCls(document.getElementById(_id), 'hidden')
-    }    
+    }
 
 
     document.querySelector('.container').addEventListener('scroll', function () {
         if (this.scrollHeight - this.scrollTop === this.clientHeight) {
-            console.log("到达底部");
+            if(_isNext) {
+                // 调用接口
+                fnGetData()
+            }
 
         }
-    })
+    });
     // 初始化点击评分操作
     fnHandleStar(document.getElementById('projectStar'), 1);
     fnHandleStar(document.getElementById('operationStar'), 2);
@@ -472,12 +503,59 @@
 
     // 初始化列表委托事件
     document.querySelector('#container').addEventListener('click', function (e) {
+        var element = e.srcElement || e.target;
         if (e.target.nodeName == 'BUTTON') {
-            var element = e.srcElement || e.target;
-            //alert(element.innerHTML)
-            //alert(element.dataset.id)
+            element.innerHTML == '查看评价' ? fnDetailAjax(element.dataset.id, 'checkLayer') : fnevaluateAjax(element.dataset.id, 'evalLayer')
+        }else {
+            // 直接跳转页面
+            window.location.href = window.location.protocol + '//' + window.location.host + '/userexpenseinfo/'+element.dataset.id+'/';
         }
     });
+
+    // 查看评价
+    function fnDetailAjax(_expend, _domId) {
+        fnshowLayer(_domId);
+        $.ajax({
+            type: 'POST',
+            url: window.location.protocol + '//' + window.location.host + '/expenseinfo/{{ content.openid }}/',
+            data: {
+                expend: _expend
+            },
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("X-CSRFTOken", $.cookie("csrftoken"))
+            },
+            success: function (data) {
+                if(data) {
+                    var _checkStar  = document.getElementById('checkStar');
+                    var _handleStar  = document.getElementById('handleStar');
+                    _checkStar.innerHTML = '';
+                    _handleStar.innerHTML = '';
+                    if(data.serve_grade) {
+                        for (var _serIndex = 0; _serIndex < data.serve_grade; _serIndex++) {
+                            var _serSpan = document.createElement('span');
+                            _checkStar.appendChild(_serSpan)
+                        }
+                    }
+                    if(data.oper_grade) {
+                        for (var _openIndex = 0; _openIndex < data.oper_grade; _openIndex++) {
+                            var _serSpan = document.createElement('span');
+                            _handleStar.appendChild(_serSpan)
+                        }
+                    }
+                    document.getElementById('evaluation').innerHTML = data.evaluate;
+                    document.getElementById('proIcon').src= data.icon;
+                }
+            }
+        })
+    }
+
+    // 操作评价
+    function fnevaluateAjax(_expend, _domId) {
+        expend_id = _expend;
+        console.log(document.getElementById('productIcon'+_expend).src)
+        document.getElementById('productAvatar').src = document.getElementById('productIcon'+_expend).src
+        fnshowLayer(_domId)
+    }
 
     function fnHandleNav() {
         var _li = document.getElementById('navBox').getElementsByTagName('li');
@@ -487,16 +565,22 @@
                 for (var k = 0; k < _li.length; k++) {
                     removeCls(_li[k], 'active')
                 }
-                addCls(this, 'active')
+                addCls(this, 'active');
+                _code = this.navIndex + 1;
+                _isNext = '';
+                document.getElementById('container').innerHTML = '';
                 // 获取当前索引调用接口
+                fnGetData()
+
             })
         }
     }
 
     // 关闭弹窗
     function fnCloseLayer(e) {
-        var _event = window.event || e
-        console.log(_event)
+        var _event = window.event || e;
+        console.log(_event);
+
         if (_event.srcElement.id == 'layer') {
             addCls(document.getElementById('layer'), 'hidden')
         }
@@ -525,7 +609,7 @@
         }
         return el;
     }
-    //
+    // 点击星星评分
     function fnHandleStar(_starParent, _num) {
         var _starChild = _starParent.getElementsByTagName('span');
         for (var starIndex = 0; starIndex < _starChild.length; starIndex++) {
@@ -551,8 +635,44 @@
     }
 
     function fnSubmitAjax() {
-        addCls(document.getElementById('layer'), 'hidden');
-        var _value = document.getElementById('textarea').value
+
+        var _value = document.getElementById('textarea').value;
+        var _msg = !_projectNum ? '请选择项目评价' : !_operationNum ? '请选择操作评分' : !_value ? '请填写评论' : '';
+        if(_msg) {
+            removeCls(document.getElementById('toast'), 'hidden');
+            document.getElementById('toastMsg').innerHTML = _msg;
+            var _time = setTimeout(function () {
+                addCls(document.getElementById('toast'), 'hidden');
+                document.getElementById('toastMsg').innerHTML = '';
+                clearTimeout(_time)
+            }, 2000);
+            return false
+        }
+        // 调用评价接口
+        $.ajax({
+            type: 'POST',
+            url: window.location.protocol + '//' + window.location.host + '/expenseinfo/{{ content.openid }}/',
+            data: {
+                expend: expend_id,
+                serve_grade: Number(_projectNum),
+                oper_grade: Number(_operationNum),
+                evaluate: _value
+            },
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("X-CSRFTOken", $.cookie("csrftoken"))
+            },
+            success: function (data) {
+                if(data) {
+                    _isNext = '';
+                    addCls(document.getElementById('layer'), 'hidden');
+                    _projectNum = _operationNum = 0;
+                    document.getElementById('textarea').value = '';
+                    document.getElementById('container').innerHTML = '';
+                    // 重新调用接口
+                    fnGetData()
+                }
+            }
+        })
     }
 
 </script>

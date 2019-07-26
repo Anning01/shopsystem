@@ -37,4 +37,6 @@ urlpatterns = [
 
     # 消费详情
     path('expenseinfo/<str:openid>/', views.ExpenseInfoView.as_view(), name='expenseinfo'),
+
+    path('userexpenseinfo/<int:pk>/', views.UserExpenseInfoView.as_view(), name='userexpenseinfo')
 ]
