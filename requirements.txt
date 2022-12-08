@@ -2,7 +2,7 @@ aliyun-python-sdk-core==2.13.5
 aliyun-python-sdk-core-v3==2.13.3
 aliyun-python-sdk-kms==2.6.0
 backports.csv==1.0.7
-certifi==2019.6.16
+certifi==2022.12.7
 chardet==3.0.4
 colorama==0.4.1
 crcmod==1.7
